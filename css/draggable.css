@@ -1,0 +1,42 @@
+/* .drag {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+  background-color: lime;
+  border-radius: 0;
+  transition: background-color 0.25s, border-radius 0.25s;
+  cursor: move;
+} */
+
+.drag-start {
+  position: 'absolute';
+  z-index: 1000;
+  background-color: 'white';
+  cursor:'move';
+  transition: 'none';
+  background-color: white;
+  transition: none;
+}
+
+.drag-stop {
+  position: 'inherit';
+   /* left: 'auto'; */
+   /* top: 'auto'; */
+  z-index: 'auto';
+  transform: 'none';
+  background-color: 'transparent';
+  transition: 'transform 0.5s ease';
+}
+.animate-up {
+  /* transition: 'transform 2s ease'; */
+  animation: moveUp 0.5s ease; /* Применяем анимацию moveUp */
+}
+
+@keyframes moveUp {
+  from {
+    transform: translateY(-100%); /* Конечная позиция элемента (выше на 100%) */
+  }
+  to {
+    transform: translateY(0); /* Начальная позиция элемента */
+}
+}
