@@ -82,10 +82,11 @@ function dragEndHandler(e) {
   globalData.draggableElement = null;
   globalData.currentDropElement = null;
   globalData.emptyBlock = null;
-
-  globalData.currentDropElement = null;
+  (globalData.targetRelativePosition = null),
+    (globalData.currentDropElement = null);
   globalData.cursorStartPositionX = 0;
   globalData.cursorStartPositionY = 0;
+  globalData.scrollDirectionTemp = null;
 
   document.removeEventListener('mousemove', dragMoveHandler);
   // document.removeEventListener('mouseup', mouseDownHandler);

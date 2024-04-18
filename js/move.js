@@ -3,12 +3,15 @@ import {
   updatePosition,
   addClassToDropElement,
   createEmptyBlock,
+  directionScrollMove,
 } from './util.js';
 
 export default function dragMoveHandler(e) {
   const cursorClientX = e.pageX;
   const cursorClientY = e.pageY;
 
+  // определяем направление движения мыши , нужно для анимации (TOP | BOTTOM | VERTICAL)
+  globalData.scrollDirection = directionScrollMove(e);
   // Позиция выбранного элемента относительна левого верхнего угла viewport
   const rect = globalData.draggableElement.getBoundingClientRect();
   let chooseElementLeft = rect.left;
@@ -25,14 +28,13 @@ export default function dragMoveHandler(e) {
 
   updatePosition(shiftX, shiftY);
 
-  // Получаем элемент над которым находимся и тип элемента  'DRAGGABLE' | 'DROPZONE'
+  // Получаем элемент над которым находимся и тип элемента  'DRAGGABLE' | 'DROPZONE' либо [null, null]
   const [variant, belowElement] = getBellowElement(globalData.draggableElement);
-  console.log('▶ ⇛ variant:', variant);
 
-  //  Если это первый элемент
-  if (globalData.targetItem === null) {
-    globalData.targetItem = belowElement;
-  }
+  // //  Если это первый элемент
+  // if (globalData.targetItem === null) {
+  //   globalData.targetItem = belowElement;
+  // }
 
   globalData.targetItem = belowElement;
 
@@ -43,10 +45,11 @@ export default function dragMoveHandler(e) {
       globalData.draggableElement,
       belowElement
     );
-    if (globalData.targetRelativePosition === null) {
-      globalData.targetRelativePosition = relativePosition;
-    }
-    if (globalData.targetRelativePosition === relativePosition) return;
+
+    // if (globalData.targetRelativePosition === null) {
+    //   globalData.targetRelativePosition = relativePosition;
+    // }
+    // if (globalData.targetRelativePosition === relativePosition) return;
     globalData.targetRelativePosition = relativePosition;
     addDropZoneElement(relativePosition);
   }
@@ -57,6 +60,7 @@ export default function dragMoveHandler(e) {
     addClassToDropElement(belowElement);
   }
 }
+
 function addDropZoneElement(relativePosition) {
   if (relativePosition === 'TOP') {
     globalData.emptyBlock?.remove(); // Удаляем старый пустой блок
@@ -68,11 +72,13 @@ function addDropZoneElement(relativePosition) {
 
     // TODO  анимация дергается сделать определение движения сверху или снизу
     // TODO подходит курсор
-    const target = globalData.targetItem;
-    globalData.targetItem.classList.add('animate-up');
-    setTimeout(() => {
-      target.classList.remove('animate-up');
-    }, 550);
+    if (globalData.scrollDirection === 'TOP') {
+      const target = globalData.targetItem;
+      globalData.targetItem.classList.add('animate-up');
+      setTimeout(() => {
+        target.classList.remove('animate-up');
+      }, 550);
+    }
   }
 
   if (relativePosition === 'BOTTOM') {
@@ -112,18 +118,16 @@ function getBellowElement(dragElement) {
   );
   dragElement.hidden = false;
 
-  // NOTE если у нас появляется dropzone элемент сверху то в момент
-  // NOTE опускания элемента мы получаем два элемента `findDraggableElement` и `findDropzoneElement`
-  if (findDraggableElement && findDropzoneElement) {
-    console.warn(
-      'ОШИБКА найдены оба элемента findDraggableElement и findDropzoneElement'
-    );
-  }
   const variant = findDraggableElement
     ? 'DRAGGABLE'
     : findDropzoneElement
     ? 'DROPZONE'
     : null;
+
+  // NOTE если у нас появляется dropzone элемент сверху то в момент
+  // NOTE опускания элемента мы получаем два элемента `findDraggableElement` и `findDropzoneElement`
+  // NOTE И возвращаем только `findDropzoneElement`
+
   const belowElement = findDropzoneElement || findDraggableElement;
 
   return [variant, belowElement];

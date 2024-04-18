@@ -13,6 +13,9 @@ const globalData = {
   // позиция курсора
   cursorStartPositionX: 0, // начальная позиция курсора (первый клик)
   cursorStartPositionY: 0,
+
+  scrollDirectionTemp: null, // Переменная используется для определения направления движения курсора
+  scrollDirection: '', // Направление движения курсора
 };
 
 export default globalData;

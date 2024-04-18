@@ -2,7 +2,6 @@ import globalData from './global.js';
 
 // variant TOP | BOTTOM
 function createEmptyBlock(size, variant) {
-  console.log('▶ ⇛ variant:', variant);
   const newBlock = document.createElement('div');
 
   Object.assign(newBlock.style, {
@@ -70,8 +69,6 @@ function addClassToDropElement(dropElement) {
 
   // Нашли подходящий блок
   if (dropElement.hasAttribute('data-empty-pos')) {
-    console.log(dropElement.innerText);
-
     if (globalData.currentDropElement !== dropElement) {
       globalData.currentDropElement?.classList.remove('below-block');
       globalData.currentDropElement = dropElement;
@@ -90,4 +87,28 @@ function addClassToDropElement(dropElement) {
   //   }
   // }
 }
-export { createEmptyBlock, updatePosition, addClassToDropElement };
+
+function directionScrollMove(event) {
+  // document.addEventListener('mousemove', function (event) {
+  let direction = '';
+
+  if (globalData.scrollDirectionTemp === null) {
+    globalData.scrollDirectionTemp = event.clientY;
+  }
+
+  if (event.clientY > globalData.scrollDirectionTemp) {
+    direction = 'BOTTOM';
+  }
+  if (event.clientY < globalData.scrollDirectionTemp) {
+    direction = 'TOP';
+  }
+  globalData.scrollDirectionTemp = event.clientY;
+
+  return direction;
+}
+export {
+  createEmptyBlock,
+  updatePosition,
+  addClassToDropElement,
+  directionScrollMove,
+};
