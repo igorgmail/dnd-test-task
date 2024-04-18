@@ -8,56 +8,56 @@ import {
 export default function dragMoveHandler(e) {
   const cursorClientX = e.pageX;
   const cursorClientY = e.pageY;
-  // e.preventDefault();
 
   // Позиция выбранного элемента относительна левого верхнего угла viewport
   const rect = globalData.draggableElement.getBoundingClientRect();
   let chooseElementLeft = rect.left;
   let chooseElementTop = rect.top;
 
-  // Расчитываем смещение курсора
+  // Рассчитываем смещение курсора
   const shiftX = cursorClientX - globalData.cursorStartPositionX;
   const shiftY = cursorClientY - globalData.cursorStartPositionY;
 
   //  Первое перемещение, только начало движения
   if (!globalData.moveStart) {
     globalData.moveStart = true; // Перемещение начато
-    // console.log('▶ ⇛ cursorClientX:', cursorClientX);
-    // console.log('▶ ⇛ cursorClientY:', cursorClientY);
-
-    // createEmptyBlock(size);
-
-    // Object.assign(globalData.draggableElement.style, {
-    //   // position: 'absolute',
-    //   zIndex: 1000,
-    //   width: `${globalData.draggableElement.offsetWidth}px`,
-    //   height: `${globalData.draggableElement.offsetHeight}px`,
-    //   backgroundColor: 'white',
-    //   pointer: 'move',
-    //   transition: 'none',
-    // });
-  }
-
-  // наш draggable елемент больше выше или больше ниже того что под ним
-  function getRelativePosition(dragElement, belowElement) {
-    if (!belowElement.classList.contains('block__item')) return;
-    // console.log('▶ ⇛ belowElement:', belowElement);
-    const rectA = dragElement.getBoundingClientRect();
-    const rectB = belowElement.getBoundingClientRect();
-    const result = rectA.top + rectA.height / 2 < rectB.top + rectB.height / 2;
-    return result ? 'TOP' : 'BOTTOM';
   }
 
   updatePosition(shiftX, shiftY);
-  // Получаем элемент над которым находимся
-  const belowElement = getDropElement(globalData.draggableElement);
-  globalData.targetItem = belowElement;
-  // Определяем куда добавить empty block (top | bottom)
-  const relativePosition = getRelativePosition(
-    globalData.draggableElement,
-    belowElement
-  );
 
+  // Получаем элемент над которым находимся и тип элемента  'DRAGGABLE' | 'DROPZONE'
+  const [variant, belowElement] = getBellowElement(globalData.draggableElement);
+  console.log('▶ ⇛ variant:', variant);
+
+  //  Если это первый элемент
+  if (globalData.targetItem === null) {
+    globalData.targetItem = belowElement;
+  }
+
+  globalData.targetItem = belowElement;
+
+  // Если 'DRAGGABLE' то добавляем dropzone элемент
+  if (variant === 'DRAGGABLE') {
+    // Определяем куда добавить empty block (top | bottom)
+    const relativePosition = getRelativePosition(
+      globalData.draggableElement,
+      belowElement
+    );
+    if (globalData.targetRelativePosition === null) {
+      globalData.targetRelativePosition = relativePosition;
+    }
+    if (globalData.targetRelativePosition === relativePosition) return;
+    globalData.targetRelativePosition = relativePosition;
+    addDropZoneElement(relativePosition);
+  }
+
+  if (variant === 'DROPZONE') {
+    // Навели на зону в которую можем опустить наш элемент
+    // Добавляем класс элементу dropzone empty block
+    addClassToDropElement(belowElement);
+  }
+}
+function addDropZoneElement(relativePosition) {
   if (relativePosition === 'TOP') {
     globalData.emptyBlock?.remove(); // Удаляем старый пустой блок
     globalData.emptyBlock = createEmptyBlock(
@@ -66,7 +66,8 @@ export default function dragMoveHandler(e) {
     );
     globalData.targetItem.before(globalData.emptyBlock);
 
-    // TODO  анимация дергается
+    // TODO  анимация дергается сделать определение движения сверху или снизу
+    // TODO подходит курсор
     const target = globalData.targetItem;
     globalData.targetItem.classList.add('animate-up');
     setTimeout(() => {
@@ -82,12 +83,12 @@ export default function dragMoveHandler(e) {
     );
     globalData.targetItem.after(globalData.emptyBlock);
   }
-  // Добавляем класс элементу empty block
-  addClassToDropElement(belowElement);
 }
 
-function getDropElement(dragElement) {
+function getBellowElement(dragElement) {
   const rect = dragElement.getBoundingClientRect();
+
+  // Получаем координаты элемента для поиска
   // Ищем относительно середины перетаскиваемого элемента
   const coordinates = {
     x: rect.left + rect.width / 2,
@@ -96,10 +97,45 @@ function getDropElement(dragElement) {
 
   dragElement.hidden = true;
 
-  const element = document.elementFromPoint(coordinates.x, coordinates.y);
-  // console.log('▶ ⇛ BELOW element:', element);
-  // console.log('▶ ⇛ coordinates.y:', coordinates.y);
-  // console.log('▶ ⇛ coordinates.x:', coordinates.x);
+  const allElements = document.elementsFromPoint(coordinates.x, coordinates.y);
+
+  // Ищем draggable элементы
+  const findDraggableElement = allElements.find(
+    (element) =>
+      element.hasAttribute('data-draggable') && element !== dragElement
+  );
+
+  // Ищем dropzone элементы
+  const findDropzoneElement = allElements.find(
+    (element) =>
+      element.hasAttribute('data-dropzone') && element !== dragElement
+  );
   dragElement.hidden = false;
-  return element;
+
+  // NOTE если у нас появляется dropzone элемент сверху то в момент
+  // NOTE опускания элемента мы получаем два элемента `findDraggableElement` и `findDropzoneElement`
+  if (findDraggableElement && findDropzoneElement) {
+    console.warn(
+      'ОШИБКА найдены оба элемента findDraggableElement и findDropzoneElement'
+    );
+  }
+  const variant = findDraggableElement
+    ? 'DRAGGABLE'
+    : findDropzoneElement
+    ? 'DROPZONE'
+    : null;
+  const belowElement = findDropzoneElement || findDraggableElement;
+
+  return [variant, belowElement];
+}
+
+// наш draggable элемент (больше выше) или (больше ниже) того что под ним
+// под ним предполагается элемент `draggable`
+function getRelativePosition(dragElement, belowElement) {
+  if (!belowElement.hasAttribute('data-draggable')) return;
+  if (dragElement === belowElement) return;
+  const rectA = dragElement.getBoundingClientRect();
+  const rectB = belowElement.getBoundingClientRect();
+  const result = rectA.top + rectA.height / 2 < rectB.top + rectB.height / 2;
+  return result ? 'TOP' : 'BOTTOM';
 }

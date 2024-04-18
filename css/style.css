@@ -20,13 +20,18 @@ border: 2px solid black;
 
 .block__item{
   width: 283px;
-  height: 31px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
   border: 2px solid rgb(248, 91, 91);
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   background-color: 'transparent';
 cursor: move;
+}
+.block__item__part{
+  pointer-events: none; 
 }
 /* Установить на дочерних
 что бы не работали события мыши
@@ -40,23 +45,3 @@ cursor: move;
   box-shadow: 0px 0px 20px 0px #3b7dee;
 }
 
-/* Не используется */
-.block__item__dragging{
-  border: 2px solid rgb(248, 91, 91);
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-}
-
-.block__empty {
-  display: flex;
-  flex-direction: row;
-}
-.block__empty__item{
-width: 100%;
-border: 2px solid black;
-}
-
-.below-block{
-  border: 2px solid rgb(1, 178, 16);
-}

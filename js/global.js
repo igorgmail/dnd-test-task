@@ -3,8 +3,10 @@ const globalData = {
   draggableElement: null, // выбранные элемент
   moveStart: false, // начало перетаскивания
   chooseElementSize: { width: 0, height: 0 }, // размер выбранного элемента
-  currentDropElement: null, // пустой placeholder куда поместиться элемент
+
   targetItem: null, // Элемент на который наводим наш drag item (draggableElement)
+  targetRelativePosition: '', // Позиция draggable элемента на target элементе TOP | BOTTOM
+  currentDropElement: null, // пустой placeholder куда поместиться элемент (dropzone)
 
   emptyBlock: null,
   // requestId: undefined,

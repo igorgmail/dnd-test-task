@@ -1,12 +1,22 @@
-/* .drag {
-  position: absolute;
-  height: 100px;
-  width: 100px;
-  background-color: lime;
-  border-radius: 0;
-  transition: background-color 0.25s, border-radius 0.25s;
-  cursor: move;
-} */
+.block__item-draggable{
+  background-color: rgb(4, 116, 56);
+}
+
+.block__empty {
+  display: flex;
+  flex-direction: row;
+}
+.block__empty__item{
+width: 100%;
+border: 2px solid black;
+}
+
+.below-block{
+  border: 2px solid rgb(1, 178, 16);
+}
+
+
+/* ????? */
 
 .drag-start {
   position: 'absolute';

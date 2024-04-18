@@ -2,6 +2,7 @@ import globalData from './global.js';
 
 // variant TOP | BOTTOM
 function createEmptyBlock(size, variant) {
+  console.log('▶ ⇛ variant:', variant);
   const newBlock = document.createElement('div');
 
   Object.assign(newBlock.style, {
@@ -12,8 +13,13 @@ function createEmptyBlock(size, variant) {
   });
 
   newBlock.classList.add('block__empty');
+
+  if (variant === 'STUB') {
+    newBlock.setAttribute('data-empty-pos', 'stub');
+  }
   if (variant === 'TOP') {
     newBlock.setAttribute('data-empty-pos', 'top');
+    newBlock.setAttribute('data-dropzone', '');
   }
   if (variant === 'BOTTOM') {
     const [leftBlock, rightBlock] = createInsideBlock();
@@ -31,11 +37,14 @@ function createInsideBlock() {
   const blockLeft = document.createElement('div');
   const blockRight = document.createElement('div');
 
-  blockLeft.innerHTML = `<span class="yellow">LEFT</span>`;
-  blockRight.innerHTML = `<span class="yellow">RIGHT</span>`;
+  blockLeft.innerHTML = `<span>LEFT</span>`;
+  blockRight.innerHTML = `<span>RIGHT</span>`;
 
   blockLeft.classList.add('block__empty__item');
   blockRight.classList.add('block__empty__item');
+
+  blockLeft.setAttribute('data-dropzone', '');
+  blockRight.setAttribute('data-dropzone', '');
 
   blockLeft.setAttribute('data-empty-pos', 'left');
   blockRight.setAttribute('data-empty-pos', 'right');
