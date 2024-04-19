@@ -36,8 +36,8 @@ function createInsideBlock() {
   const blockLeft = document.createElement('div');
   const blockRight = document.createElement('div');
 
-  blockLeft.innerHTML = `<span>LEFT</span>`;
-  blockRight.innerHTML = `<span>RIGHT</span>`;
+  // blockLeft.innerHTML = `<span>LEFT</span>`;
+  // blockRight.innerHTML = `<span>RIGHT</span>`;
 
   blockLeft.classList.add('block__empty__item');
   blockRight.classList.add('block__empty__item');
@@ -115,6 +115,7 @@ function moveItemUp() {
 
 function firstNumberChange() {
   const allLiElements = document.querySelectorAll('[data-draggable]');
+
   allLiElements.forEach((el, ind) => {
     const numberElement = el.firstElementChild;
     if (numberElement) {
@@ -124,7 +125,7 @@ function firstNumberChange() {
 }
 function secondNumberChange() {
   function getNestedLevel(liElement) {
-    // console.log('▶ ⇛ liElement:', liElement);
+    console.log('▶ ⇛ liElement:', liElement);
     let level = 0;
     // const result = liElement.parentElement;
     // const result2 = result.parentElement;
@@ -141,13 +142,20 @@ function secondNumberChange() {
       parentElement = parentElement.parentElement;
     }
 
-    // console.log('▶ ⇛ level:', level);
+    console.log('▶ ⇛ level:', level);
     return level;
   }
 
   const allLiElements = document.querySelectorAll('[data-draggable]');
-  allLiElements.forEach((liElement) => {
+  let previousLevel = 0;
+  allLiElements.forEach((liElement, ind) => {
+    if (ind === 0) {
+      liElement.lastElementChild.textContent = 1;
+    }
     const level = getNestedLevel(liElement);
+    console.log('PREV', previousLevel);
+    console.log('CURR', level);
+    previousLevel = level;
     // console.log(
     //   `Уровень вложенности для элемента ${liElement.textContent.trim()}: ${level}`
     // );
@@ -156,23 +164,44 @@ function secondNumberChange() {
 
 function detectedEmptyUl() {
   // Находим родительский <ul>
-  const parentUl = document.querySelector('.block__container > ul');
+  const container = document.querySelector('[data-draggable-container]');
+  const parentUl = container.querySelector('ul');
+  const childrenUl = parentUl.firstElementChild;
 
-  if (parentUl.children.length <= 1) {
+  if (
+    parentUl.children.length === 1 &&
+    childrenUl.nodeName.toLowerCase() === 'ul'
+  ) {
     // Находим вложенный <ul>
     const nestedUl = parentUl.querySelector('ul');
-
-    // Находим дочерние <li> во вложенном <ul>
-    const nestedLiElements = nestedUl.querySelectorAll('li');
-
-    // Добавляем каждый дочерний <li> к родительскому <ul>
-    nestedLiElements.forEach((liElement) => {
-      parentUl.appendChild(liElement);
-    });
-
-    // Удаляем вложенный <ul>
-    parentUl.removeChild(nestedUl);
+    container.insertAdjacentElement('afterbegin', nestedUl);
   }
+
+  const allUlElements = container.querySelectorAll('ul');
+
+  allUlElements.forEach((el) => {
+    if (el.children?.length === 0) {
+      el.remove();
+    }
+  });
+}
+
+function getAllChildrenTree(element) {
+  const container = document.querySelector('[data-draggable-container]');
+  const nextElement = element.nextElementSibling;
+  console.log('▶ ⇛ nextElement:', nextElement);
+
+  const box = document.createElement('div');
+  // const box = document.createDocumentFragment();
+  box.classList.add('block__item');
+  box.setAttribute('data-draggable', '');
+  box.insertAdjacentElement('afterbegin', element);
+  // box.appendChild(nextElement);
+  box.insertAdjacentElement('afterend', nextElement);
+  container.appendChild(box);
+
+  console.log('▶ ⇛ box:', box);
+  return box;
 }
 
 export {
@@ -185,4 +214,5 @@ export {
   firstNumberChange,
   secondNumberChange,
   detectedEmptyUl,
+  getAllChildrenTree,
 };

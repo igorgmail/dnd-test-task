@@ -12,7 +12,6 @@ function dragEndHandler(e) {
   globalData.moveStart = false; // Перемещение законченно
 
   console.log('TARGET STOP');
-  console.log(globalData.currentDropElement?.dataset.emptyPos);
   insertDraggableElement();
 
   // Удаляем пустой блок
@@ -37,6 +36,7 @@ function dragEndHandler(e) {
   globalData.cursorStartPositionX = 0;
   globalData.cursorStartPositionY = 0;
   globalData.scrollDirectionTemp = null;
+  globalData.currentDropParent = null;
 
   document.removeEventListener('mousemove', dragMoveHandler);
   // document.removeEventListener('mouseup', mouseDownHandler);
@@ -45,12 +45,8 @@ function dragEndHandler(e) {
 
 // Вставляем блок в dropzone выбранную
 function insertDraggableElement() {
-  console.log('Draggable element');
-  console.log(globalData.draggableElement);
-  console.log('currentDropElement element');
-  console.log(globalData.currentDropElement);
-
   const targetDataValue = globalData.currentDropElement?.dataset.emptyPos;
+
   if (targetDataValue === 'top') {
     const newElement = globalData.draggableElement;
     globalData.currentDropElement.after(newElement);
@@ -62,6 +58,41 @@ function insertDraggableElement() {
     // получаем родителя
     parent.after(newElement);
   }
+
+  if (targetDataValue === 'right') {
+    const draggableElement = globalData.draggableElement;
+    const initiatorElement = globalData.currentDropParent;
+
+    const nextSibling = initiatorElement.nextElementSibling.nextElementSibling;
+
+    // Если следующего узла нет то это последний элемент в этом родителе
+    // то создаем новый ul и вставляем после инициатора
+    if (!nextSibling) {
+      const newUlEl = createNewUlElement(draggableElement);
+      globalData.currentDropParent.after(newUlEl);
+      return;
+    }
+    const nextSiblingName = nextSibling.nodeName.toLowerCase();
+
+    // Проверяем есть ли вложенные <ul>
+    if (nextSiblingName === 'ul') {
+      nextSibling.firstChild.before(draggableElement);
+      return;
+    }
+
+    // Если следующий такой же пункт списка
+    if (nextSiblingName === 'li') {
+      const newUlEl = createNewUlElement(draggableElement);
+      initiatorElement.insertAdjacentElement('afterend', newUlEl);
+      // nextSibling.firstChild.beforebegin(newUlEl);
+      return;
+    }
+  }
+}
+function createNewUlElement(currentElement) {
+  const newUl = document.createElement('ul');
+  newUl.appendChild(currentElement);
+  return newUl;
 }
 
 export default dragEndHandler;

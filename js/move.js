@@ -27,16 +27,6 @@ export default function dragMoveHandler(e) {
 
   // Получаем элемент над которым находимся и тип элемента  'DRAGGABLE' | 'DROPZONE' либо [null, null]
   const [variant, belowElement] = getBellowElement(globalData.draggableElement);
-  console.log(
-    '▶ ⇛ globalData.currentDropElement:',
-    globalData.currentDropElement
-  );
-  console.log('▶ ⇛ belowElement:', belowElement);
-
-  // //  Если это первый элемент
-  // if (globalData.targetItem === null) {
-  //   globalData.targetItem = belowElement;
-  // }
 
   globalData.targetItem = belowElement;
 
@@ -48,10 +38,6 @@ export default function dragMoveHandler(e) {
       belowElement
     );
 
-    // if (globalData.targetRelativePosition === null) {
-    //   globalData.targetRelativePosition = relativePosition;
-    // }
-    // if (globalData.targetRelativePosition === relativePosition) return;
     globalData.targetRelativePosition = relativePosition;
     addDropZoneElement(relativePosition);
     addClassToDropElement(belowElement);
@@ -87,6 +73,7 @@ function addDropZoneElement(relativePosition) {
     );
     globalData.targetItem.after(globalData.emptyBlock);
   }
+  globalData.currentDropParent = globalData.targetItem;
 }
 
 function getBellowElement(dragElement) {
@@ -134,10 +121,14 @@ function getBellowElement(dragElement) {
 // наш draggable элемент (больше выше) или (больше ниже) того что под ним
 // под ним предполагается элемент `draggable`
 function getRelativePosition(dragElement, belowElement) {
+  if (belowElement.hasAttribute('data-main')) return 'BOTTOM';
   if (!belowElement.hasAttribute('data-draggable')) return;
   if (dragElement === belowElement) return;
+
   const rectA = dragElement.getBoundingClientRect();
   const rectB = belowElement.getBoundingClientRect();
+
   const result = rectA.top + rectA.height / 2 < rectB.top + rectB.height / 2;
+
   return result ? 'TOP' : 'BOTTOM';
 }

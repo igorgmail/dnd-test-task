@@ -1,7 +1,7 @@
 import globalData from './global.js';
 import dragMoveHandler from './move.js';
 import dragEndHandler from './endMove.js';
-import { createEmptyBlock } from './util.js';
+import { createEmptyBlock, getAllChildrenTree } from './util.js';
 /* eslint-disable no-use-before-define */
 const container = document.querySelector('[data-draggable-container]');
 const allBlocks = container.querySelectorAll('[data-draggable]');
@@ -10,14 +10,17 @@ const mouseDownHandler = (e) => {
   e.preventDefault();
 
   const element = e.target.closest('[data-draggable]');
+  if (element.hasAttribute('data-main')) return;
   if (!element.hasAttribute('data-draggable')) return;
 
   globalData.cursorStartPositionX = e.clientX;
   globalData.cursorStartPositionY = e.clientY;
 
+  // const testElement = getAllChildrenTree(element);
   // Получаем инфо об элементе
   const [chooseElementSize, chooseElementPosition] =
     getInfoAboutElement(element);
+  // getInfoAboutElement(element);
 
   // Стили draggable элемента
   Object.assign(element.style, {

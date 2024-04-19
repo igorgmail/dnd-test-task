@@ -33,17 +33,20 @@ gap: 1rem;
   margin-left: 70px; /* Установите нужное вам значение отступа */
 }
 
-.block__item{
+.block__item, .block__item-main{
   width: 280px;
-  height: 2rem;
+  height: 2.5rem;
   display: flex;
   justify-content: center;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
-  background-color: 'transparent';
-cursor: move;
 }
+
+.block__item{
+  cursor: move;
+}
+
 .block__item__part:first-child{
 background-color: #C84904;
 }
