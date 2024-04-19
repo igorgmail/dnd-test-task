@@ -4,18 +4,15 @@ import {
   addClassToDropElement,
   createEmptyBlock,
   directionScrollMove,
+  moveItemDown,
 } from './util.js';
 
 export default function dragMoveHandler(e) {
   const cursorClientX = e.pageX;
   const cursorClientY = e.pageY;
 
-  // определяем направление движения мыши , нужно для анимации (TOP | BOTTOM | VERTICAL)
+  // определяем направление движения мыши , нужно для анимации (TOP | BOTTOM )
   globalData.scrollDirection = directionScrollMove(e);
-  // Позиция выбранного элемента относительна левого верхнего угла viewport
-  const rect = globalData.draggableElement.getBoundingClientRect();
-  let chooseElementLeft = rect.left;
-  let chooseElementTop = rect.top;
 
   // Рассчитываем смещение курсора
   const shiftX = cursorClientX - globalData.cursorStartPositionX;
@@ -30,6 +27,11 @@ export default function dragMoveHandler(e) {
 
   // Получаем элемент над которым находимся и тип элемента  'DRAGGABLE' | 'DROPZONE' либо [null, null]
   const [variant, belowElement] = getBellowElement(globalData.draggableElement);
+  console.log(
+    '▶ ⇛ globalData.currentDropElement:',
+    globalData.currentDropElement
+  );
+  console.log('▶ ⇛ belowElement:', belowElement);
 
   // //  Если это первый элемент
   // if (globalData.targetItem === null) {
@@ -52,12 +54,14 @@ export default function dragMoveHandler(e) {
     // if (globalData.targetRelativePosition === relativePosition) return;
     globalData.targetRelativePosition = relativePosition;
     addDropZoneElement(relativePosition);
+    addClassToDropElement(belowElement);
   }
 
   if (variant === 'DROPZONE') {
     // Навели на зону в которую можем опустить наш элемент
     // Добавляем класс элементу dropzone empty block
     addClassToDropElement(belowElement);
+    // и ложим его в текущий возможный для drop - currentDropElement
   }
 }
 
@@ -69,15 +73,9 @@ function addDropZoneElement(relativePosition) {
       'TOP'
     );
     globalData.targetItem.before(globalData.emptyBlock);
-
-    // TODO  анимация дергается сделать определение движения сверху или снизу
-    // TODO подходит курсор
+    // Animation
     if (globalData.scrollDirection === 'TOP') {
-      const target = globalData.targetItem;
-      globalData.targetItem.classList.add('animate-up');
-      setTimeout(() => {
-        target.classList.remove('animate-up');
-      }, 550);
+      moveItemDown();
     }
   }
 

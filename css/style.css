@@ -2,7 +2,7 @@
 min-width: 100%;
 min-height: 100svh;
 padding: 4rem 10%;
-background-color: rgb(185, 185, 185);
+background-color: rgb(245, 245, 245);
 }
 
 .block__container{
@@ -17,27 +17,53 @@ border-radius: 8px;
 border: 2px solid black;
 }
 
+.block__container>ul{
+display: flex;
+flex-direction: column;
+justify-content: center;
+/* margin-top: 2rem; */
+gap: 1rem;
+
+}
+ul ul{
+  display: flex;
+flex-direction: column;
+justify-content: center;
+gap: 1rem;
+  margin-left: 70px; /* Установите нужное вам значение отступа */
+}
 
 .block__item{
-  width: 283px;
-  height: 50px;
+  width: 280px;
+  height: 2rem;
   display: flex;
   justify-content: center;
-  border: 2px solid rgb(248, 91, 91);
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   background-color: 'transparent';
 cursor: move;
 }
+.block__item__part:first-child{
+background-color: #C84904;
+}
+.block__item__part:last-child{
+background-color: #4E4D4D;
+}
 .block__item__part{
-  pointer-events: none; 
+  pointer-events: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  color: rgb(255, 255, 255);
 }
 /* Установить на дочерних
 что бы не работали события мыши
   pointer-events: none; 
    */
-.block__item>p{
+.block__item>*{
     pointer-events: none; 
 }
 

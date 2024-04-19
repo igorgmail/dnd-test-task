@@ -5,7 +5,7 @@ function createEmptyBlock(size, variant) {
   const newBlock = document.createElement('div');
 
   Object.assign(newBlock.style, {
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     width: `${size.width}px`,
     height: `${size.height}px`,
     // margin-bottom: 0.5em;
@@ -56,9 +56,10 @@ function updatePosition(x, y) {
   }
 }
 
-function addClassToDropElement(dropElement) {
+// TODO убрать логику оставить только добавление класса
+function addClassToDropElement(belowElement) {
   // перемещение есть но подходящего блока нет
-  if (!dropElement.hasAttribute('data-empty-pos')) {
+  if (!belowElement.hasAttribute('data-empty-pos')) {
     globalData.currentDropElement?.classList.remove('below-block');
     globalData.currentDropElement = null;
   }
@@ -68,28 +69,17 @@ function addClassToDropElement(dropElement) {
   // }
 
   // Нашли подходящий блок
-  if (dropElement.hasAttribute('data-empty-pos')) {
-    if (globalData.currentDropElement !== dropElement) {
+  if (belowElement.hasAttribute('data-empty-pos')) {
+    if (globalData.currentDropElement !== belowElement) {
       globalData.currentDropElement?.classList.remove('below-block');
-      globalData.currentDropElement = dropElement;
+      globalData.currentDropElement = belowElement;
 
       globalData.currentDropElement.classList.add('below-block');
     }
   }
-  // if (dropElement.classList.contains('block__empty__item')) {
-  //   console.log(dropElement.innerText);
-
-  //   if (globalData.currentDropElement !== dropElement) {
-  //     globalData.currentDropElement?.classList.remove('below-block');
-  //     globalData.currentDropElement = dropElement;
-
-  //     globalData.currentDropElement.classList.add('below-block');
-  //   }
-  // }
 }
 
 function directionScrollMove(event) {
-  // document.addEventListener('mousemove', function (event) {
   let direction = '';
 
   if (globalData.scrollDirectionTemp === null) {
@@ -106,9 +96,93 @@ function directionScrollMove(event) {
 
   return direction;
 }
+
+function moveItemDown() {
+  const target = globalData.targetItem;
+  globalData.targetItem.classList.add('animate-down');
+  setTimeout(() => {
+    target.classList.remove('animate-down');
+  }, 550);
+}
+
+function moveItemUp() {
+  const target = globalData.targetItem;
+  globalData.targetItem.classList.add('animate-up');
+  setTimeout(() => {
+    target.classList.remove('animate-up');
+  }, 550);
+}
+
+function firstNumberChange() {
+  const allLiElements = document.querySelectorAll('[data-draggable]');
+  allLiElements.forEach((el, ind) => {
+    const numberElement = el.firstElementChild;
+    if (numberElement) {
+      numberElement.textContent = ind + 1;
+    }
+  });
+}
+function secondNumberChange() {
+  function getNestedLevel(liElement) {
+    // console.log('▶ ⇛ liElement:', liElement);
+    let level = 0;
+    // const result = liElement.parentElement;
+    // const result2 = result.parentElement;
+    // console.log('CLOSEST-1', result);
+    // console.log('CLOSEST-2', result2);
+
+    let parentElement = liElement.parentElement;
+    // console.log('▶ ⇛ parentElement:', parentElement.nodeName.toLowerCase());
+
+    while (parentElement.nodeName.toLowerCase() === 'ul') {
+      level++;
+      if (parentElement.nodeName.toLowerCase() === 'li') {
+      }
+      parentElement = parentElement.parentElement;
+    }
+
+    // console.log('▶ ⇛ level:', level);
+    return level;
+  }
+
+  const allLiElements = document.querySelectorAll('[data-draggable]');
+  allLiElements.forEach((liElement) => {
+    const level = getNestedLevel(liElement);
+    // console.log(
+    //   `Уровень вложенности для элемента ${liElement.textContent.trim()}: ${level}`
+    // );
+  });
+}
+
+function detectedEmptyUl() {
+  // Находим родительский <ul>
+  const parentUl = document.querySelector('.block__container > ul');
+
+  if (parentUl.children.length <= 1) {
+    // Находим вложенный <ul>
+    const nestedUl = parentUl.querySelector('ul');
+
+    // Находим дочерние <li> во вложенном <ul>
+    const nestedLiElements = nestedUl.querySelectorAll('li');
+
+    // Добавляем каждый дочерний <li> к родительскому <ul>
+    nestedLiElements.forEach((liElement) => {
+      parentUl.appendChild(liElement);
+    });
+
+    // Удаляем вложенный <ul>
+    parentUl.removeChild(nestedUl);
+  }
+}
+
 export {
   createEmptyBlock,
   updatePosition,
   addClassToDropElement,
   directionScrollMove,
+  moveItemDown,
+  moveItemUp,
+  firstNumberChange,
+  secondNumberChange,
+  detectedEmptyUl,
 };

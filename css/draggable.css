@@ -1,48 +1,31 @@
 .block__item-draggable{
-  background-color: rgb(4, 116, 56);
+  box-shadow: 0px 0px 20px 0px #3b7dee;
+  opacity: 0.8;
 }
 
 .block__empty {
   display: flex;
   flex-direction: row;
+  background-color: #b7b3c7;
 }
+
 .block__empty__item{
 width: 100%;
-border: 2px solid black;
+border: 2px solid #b7b3c7;
 }
 
 .below-block{
-  border: 2px solid rgb(1, 178, 16);
+  border: 2px solid #b7b3c7;
+  box-shadow: 0px 0px 10px 6px #726995;
 }
 
 
-/* ????? */
-
-.drag-start {
-  position: 'absolute';
-  z-index: 1000;
-  background-color: 'white';
-  cursor:'move';
-  transition: 'none';
-  background-color: white;
-  transition: none;
-}
-
-.drag-stop {
-  position: 'inherit';
-   /* left: 'auto'; */
-   /* top: 'auto'; */
-  z-index: 'auto';
-  transform: 'none';
-  background-color: 'transparent';
-  transition: 'transform 0.5s ease';
-}
-.animate-up {
+.animate-down {
   /* transition: 'transform 2s ease'; */
-  animation: moveUp 0.5s ease; /* Применяем анимацию moveUp */
+  animation: moveDown 0.5s ease; /* Применяем анимацию moveUp */
 }
 
-@keyframes moveUp {
+@keyframes moveDown {
   from {
     transform: translateY(-100%); /* Конечная позиция элемента (выше на 100%) */
   }
