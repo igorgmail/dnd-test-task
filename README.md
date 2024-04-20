@@ -19,7 +19,7 @@ cd dnd-test-task
 Установите зависимости
 
 ```bash
-> npm install
+npm install
 ```
 
 Запустите проект
