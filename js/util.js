@@ -180,27 +180,6 @@ function secondNumberChange() {
     console.log('▶ ⇛ allLevels:', allLevels);
   });
 }
-// function secondNumberChange() {
-//   const ulContainer = document.querySelector('[data-draggable-container]>ul');
-
-//   function getNestedLevel(ulElement, level = 1) {
-//     console.log('▶ ⇛ ulElement:', ulElement);
-//     // Перебираем дочерние элементы ulElement
-//     for (let i = 0; i < ulElement.children.length; i++) {
-//       const el = ulElement.children[i];
-//       // Если дочерний элемент - это ul, вызываем getNestedLevel с увеличенным уровнем на 1
-//       if (el.nodeName.toLowerCase() === 'ul') {
-//         getNestedLevel(el, level + 1);
-//       }
-//       if (el.nodeName.toLowerCase() === 'li') {
-//         console.log('el', el);
-//         console.log('level', level);
-//         el.setAttribute('data-level', level);
-//       }
-//     }
-//   }
-//   getNestedLevel(ulContainer);
-// }
 
 function detectedEmptyUl() {
   // Находим родительский <ul>

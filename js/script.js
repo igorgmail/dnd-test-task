@@ -1,7 +1,7 @@
 import globalData from './global.js';
 import dragMoveHandler from './move.js';
 import dragEndHandler from './endMove.js';
-import { createEmptyBlock, getAllChildrenTree } from './util.js';
+import { createEmptyBlock } from './util.js';
 /* eslint-disable no-use-before-define */
 const container = document.querySelector('[data-draggable-container]');
 const allBlocks = container.querySelectorAll('[data-draggable]');
@@ -68,4 +68,16 @@ function getInfoAboutElement(element) {
   };
 
   return [size, position];
+}
+
+const addButton = document.getElementById('add-button');
+addButton.addEventListener('click', addNewElement);
+
+function addNewElement() {
+  const container = document.querySelector('[data-draggable-container]>ul');
+  const elements = container.querySelectorAll('li');
+  const tempElement = elements[elements.length - 1];
+  const newElement = tempElement.cloneNode(true);
+  newElement.onmousedown = mouseDownHandler;
+  container.insertAdjacentElement('beforeend', newElement);
 }
