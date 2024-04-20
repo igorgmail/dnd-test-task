@@ -1,4 +1,3 @@
-// global.js
 const globalData = {
   draggableElement: null, // выбранные элемент
   moveStart: false, // начало перетаскивания

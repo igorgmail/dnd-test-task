@@ -1,6 +1,7 @@
 .block__item-draggable{
   box-shadow: 0px 0px 20px 0px #3b7dee;
   opacity: 0.8;
+  cursor: grabbing;
 }
 
 .block__empty {
