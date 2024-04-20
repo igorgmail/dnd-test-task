@@ -123,44 +123,84 @@ function firstNumberChange() {
     }
   });
 }
-function secondNumberChange() {
-  function getNestedLevel(liElement) {
-    console.log('▶ ⇛ liElement:', liElement);
-    let level = 0;
-    // const result = liElement.parentElement;
-    // const result2 = result.parentElement;
-    // console.log('CLOSEST-1', result);
-    // console.log('CLOSEST-2', result2);
 
-    let parentElement = liElement.parentElement;
-    // console.log('▶ ⇛ parentElement:', parentElement.nodeName.toLowerCase());
-
-    while (parentElement.nodeName.toLowerCase() === 'ul') {
+function nestingLevelCalculate(liElement) {
+  let level = 0;
+  let parentElement = liElement.parentNode;
+  while (!parentElement.hasAttribute('data-draggable-container')) {
+    if (parentElement && parentElement.nodeName.toLowerCase() === 'ul') {
       level++;
-      if (parentElement.nodeName.toLowerCase() === 'li') {
-      }
-      parentElement = parentElement.parentElement;
+      parentElement = parentElement.parentNode;
     }
-
-    console.log('▶ ⇛ level:', level);
-    return level;
   }
+  return level;
+}
 
-  const allLiElements = document.querySelectorAll('[data-draggable]');
-  let previousLevel = 0;
-  allLiElements.forEach((liElement, ind) => {
+function secondNumberChange() {
+  const allLiElements = document.querySelectorAll(
+    '[data-draggable-container] li'
+  );
+
+  const allLevels = [];
+  let previousOrderValue;
+  let currentOrderValue;
+
+  allLiElements.forEach((el, ind, arrNodes) => {
     if (ind === 0) {
-      liElement.lastElementChild.textContent = 1;
+      el.setAttribute('data-level', 1);
+      allLevels[0] = 1;
+      return;
     }
-    const level = getNestedLevel(liElement);
-    console.log('PREV', previousLevel);
-    console.log('CURR', level);
-    previousLevel = level;
-    // console.log(
-    //   `Уровень вложенности для элемента ${liElement.textContent.trim()}: ${level}`
-    // );
+
+    let level = nestingLevelCalculate(el);
+
+    let previousElement = arrNodes[ind - 1]; // Предыдущий элемент
+    let orderPreviousElement = nestingLevelCalculate(previousElement);
+
+    if (allLevels.length < level) {
+      allLevels.push(1);
+      currentOrderValue = 1;
+    }
+
+    if (orderPreviousElement + 1 === level) {
+      allLevels[level - 1] = 1; // начало вложенного дерева
+      currentOrderValue = 1;
+    } else {
+      previousOrderValue = allLevels[level - 1]; // Значение предыдущего элемента из массива по индексу
+      currentOrderValue = previousOrderValue + 1; // Порядковое значение текущего элемента
+      allLevels[level - 1] = currentOrderValue; // Ложим текущее в массив
+    }
+
+    // Вывод в элемент
+    const resultString = allLevels.slice(0, level).join('.');
+    el.lastElementChild.textContent = resultString;
+    el.setAttribute('data-level', level);
+
+    console.log('Level->', level);
+    console.log('▶ ⇛ allLevels:', allLevels);
   });
 }
+// function secondNumberChange() {
+//   const ulContainer = document.querySelector('[data-draggable-container]>ul');
+
+//   function getNestedLevel(ulElement, level = 1) {
+//     console.log('▶ ⇛ ulElement:', ulElement);
+//     // Перебираем дочерние элементы ulElement
+//     for (let i = 0; i < ulElement.children.length; i++) {
+//       const el = ulElement.children[i];
+//       // Если дочерний элемент - это ul, вызываем getNestedLevel с увеличенным уровнем на 1
+//       if (el.nodeName.toLowerCase() === 'ul') {
+//         getNestedLevel(el, level + 1);
+//       }
+//       if (el.nodeName.toLowerCase() === 'li') {
+//         console.log('el', el);
+//         console.log('level', level);
+//         el.setAttribute('data-level', level);
+//       }
+//     }
+//   }
+//   getNestedLevel(ulContainer);
+// }
 
 function detectedEmptyUl() {
   // Находим родительский <ul>
@@ -186,6 +226,7 @@ function detectedEmptyUl() {
   });
 }
 
+// NOTE тестовая для объединения блоков для dnd
 function getAllChildrenTree(element) {
   const container = document.querySelector('[data-draggable-container]');
   const nextElement = element.nextElementSibling;
