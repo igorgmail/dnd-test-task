@@ -1,7 +1,7 @@
-import globalData from './global.js';
+import globalData from './globalData.js';
 import dragMoveHandler from './move.js';
 import dragEndHandler from './endMove.js';
-import { createEmptyBlock } from './util.js';
+import { createEmptyBlock, amountOfElements } from './util.js';
 /* eslint-disable no-use-before-define */
 const container = document.querySelector('[data-draggable-container]');
 const allBlocks = container.querySelectorAll('[data-draggable]');
@@ -16,11 +16,9 @@ const mouseDownHandler = (e) => {
   globalData.cursorStartPositionX = e.clientX;
   globalData.cursorStartPositionY = e.clientY;
 
-  // const testElement = getAllChildrenTree(element);
   // Получаем инфо об элементе
   const [chooseElementSize, chooseElementPosition] =
     getInfoAboutElement(element);
-  // getInfoAboutElement(element);
 
   // Стили draggable элемента
   Object.assign(element.style, {
@@ -29,7 +27,6 @@ const mouseDownHandler = (e) => {
     top: `${chooseElementPosition.top}px`,
     zIndex: 'auto',
     transform: 'none',
-    // backgroundColor: 'white',
     transition: 'none',
   });
 
@@ -48,6 +45,7 @@ const mouseDownHandler = (e) => {
   document.addEventListener('mouseup', dragEndHandler);
 };
 
+amountOfElements();
 allBlocks.forEach((el) => {
   const dragElement = el;
   dragElement.onmousedown = mouseDownHandler;
@@ -70,14 +68,21 @@ function getInfoAboutElement(element) {
   return [size, position];
 }
 
+// Добавление нового элемента
 const addButton = document.getElementById('add-button');
 addButton.addEventListener('click', addNewElement);
 
 function addNewElement() {
+  const amountElements = amountOfElements('get');
+  if (amountElements >= 12) {
+    alert('12 максимум');
+    return;
+  }
   const container = document.querySelector('[data-draggable-container]>ul');
   const elements = container.querySelectorAll('li');
   const tempElement = elements[elements.length - 1];
   const newElement = tempElement.cloneNode(true);
   newElement.onmousedown = mouseDownHandler;
   container.insertAdjacentElement('beforeend', newElement);
+  amountOfElements();
 }

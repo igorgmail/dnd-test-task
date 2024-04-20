@@ -1,6 +1,7 @@
-import globalData from './global.js';
+import globalData from './globalData.js';
 
-// variant TOP | BOTTOM
+// получаем variant TOP | BOTTOM
+// Создаем dropzone элемент
 function createEmptyBlock(size, variant) {
   const newBlock = document.createElement('div');
 
@@ -26,18 +27,11 @@ function createEmptyBlock(size, variant) {
   }
   globalData.emptyBlock = newBlock;
   return newBlock;
-  // globalData.draggableElement.parentNode.insertBefore(
-  //   globalData.emptyBlock,
-  //   globalData.draggableElement
-  // );
 }
 
 function createInsideBlock() {
   const blockLeft = document.createElement('div');
   const blockRight = document.createElement('div');
-
-  // blockLeft.innerHTML = `<span>LEFT</span>`;
-  // blockRight.innerHTML = `<span>RIGHT</span>`;
 
   blockLeft.classList.add('block__empty__item');
   blockRight.classList.add('block__empty__item');
@@ -63,10 +57,6 @@ function addClassToDropElement(belowElement) {
     globalData.currentDropElement?.classList.remove('below-block');
     globalData.currentDropElement = null;
   }
-  // if (!dropElement.classList.contains('block__empty__item')) {
-  //   globalData.currentDropElement?.classList.remove('below-block');
-  //   globalData.currentDropElement = null;
-  // }
 
   // Нашли подходящий блок
   if (belowElement.hasAttribute('data-empty-pos')) {
@@ -79,6 +69,7 @@ function addClassToDropElement(belowElement) {
   }
 }
 
+// Определяем направление движения мыши нужно для анимации
 function directionScrollMove(event) {
   let direction = '';
 
@@ -105,80 +96,13 @@ function moveItemDown() {
   }, 550);
 }
 
+// NOTE Не используется
 function moveItemUp() {
   const target = globalData.targetItem;
   globalData.targetItem.classList.add('animate-up');
   setTimeout(() => {
     target.classList.remove('animate-up');
   }, 550);
-}
-
-function firstNumberChange() {
-  const allLiElements = document.querySelectorAll('[data-draggable]');
-
-  allLiElements.forEach((el, ind) => {
-    const numberElement = el.firstElementChild;
-    if (numberElement) {
-      numberElement.textContent = ind + 1;
-    }
-  });
-}
-
-function nestingLevelCalculate(liElement) {
-  let level = 0;
-  let parentElement = liElement.parentNode;
-  while (!parentElement.hasAttribute('data-draggable-container')) {
-    if (parentElement && parentElement.nodeName.toLowerCase() === 'ul') {
-      level++;
-      parentElement = parentElement.parentNode;
-    }
-  }
-  return level;
-}
-
-function secondNumberChange() {
-  const allLiElements = document.querySelectorAll(
-    '[data-draggable-container] li'
-  );
-
-  const allLevels = [];
-  let previousOrderValue;
-  let currentOrderValue;
-
-  allLiElements.forEach((el, ind, arrNodes) => {
-    if (ind === 0) {
-      el.setAttribute('data-level', 1);
-      allLevels[0] = 1;
-      return;
-    }
-
-    let level = nestingLevelCalculate(el);
-
-    let previousElement = arrNodes[ind - 1]; // Предыдущий элемент
-    let orderPreviousElement = nestingLevelCalculate(previousElement);
-
-    if (allLevels.length < level) {
-      allLevels.push(1);
-      currentOrderValue = 1;
-    }
-
-    if (orderPreviousElement + 1 === level) {
-      allLevels[level - 1] = 1; // начало вложенного дерева
-      currentOrderValue = 1;
-    } else {
-      previousOrderValue = allLevels[level - 1]; // Значение предыдущего элемента из массива по индексу
-      currentOrderValue = previousOrderValue + 1; // Порядковое значение текущего элемента
-      allLevels[level - 1] = currentOrderValue; // Ложим текущее в массив
-    }
-
-    // Вывод в элемент
-    const resultString = allLevels.slice(0, level).join('.');
-    el.lastElementChild.textContent = resultString;
-    el.setAttribute('data-level', level);
-
-    console.log('Level->', level);
-    console.log('▶ ⇛ allLevels:', allLevels);
-  });
 }
 
 function detectedEmptyUl() {
@@ -205,25 +129,15 @@ function detectedEmptyUl() {
   });
 }
 
-// NOTE тестовая для объединения блоков для dnd
-function getAllChildrenTree(element) {
-  const container = document.querySelector('[data-draggable-container]');
-  const nextElement = element.nextElementSibling;
-  console.log('▶ ⇛ nextElement:', nextElement);
-
-  const box = document.createElement('div');
-  // const box = document.createDocumentFragment();
-  box.classList.add('block__item');
-  box.setAttribute('data-draggable', '');
-  box.insertAdjacentElement('afterbegin', element);
-  // box.appendChild(nextElement);
-  box.insertAdjacentElement('afterend', nextElement);
-  container.appendChild(box);
-
-  console.log('▶ ⇛ box:', box);
-  return box;
+function amountOfElements(stat) {
+  const allLi = document.querySelectorAll('[data-draggable-container] li');
+  if (stat === 'get') {
+    return allLi.length;
+  }
+  const amountSpan = document.getElementById('amount-elements');
+  amountSpan.textContent = allLi.length;
+  return;
 }
-
 export {
   createEmptyBlock,
   updatePosition,
@@ -231,8 +145,6 @@ export {
   directionScrollMove,
   moveItemDown,
   moveItemUp,
-  firstNumberChange,
-  secondNumberChange,
   detectedEmptyUl,
-  getAllChildrenTree,
+  amountOfElements,
 };

@@ -1,4 +1,4 @@
-import globalData from './global.js';
+import globalData from './globalData.js';
 import {
   updatePosition,
   addClassToDropElement,
@@ -47,7 +47,6 @@ export default function dragMoveHandler(e) {
     // Навели на зону в которую можем опустить наш элемент
     // Добавляем класс элементу dropzone empty block
     addClassToDropElement(belowElement);
-    // и ложим его в текущий возможный для drop - currentDropElement
   }
 }
 
@@ -87,7 +86,6 @@ function getBellowElement(dragElement) {
   };
 
   dragElement.hidden = true;
-
   const allElements = document.elementsFromPoint(coordinates.x, coordinates.y);
 
   // Ищем draggable элементы
@@ -114,7 +112,6 @@ function getBellowElement(dragElement) {
   // NOTE И возвращаем только `findDropzoneElement`
 
   const belowElement = findDropzoneElement || findDraggableElement;
-
   return [variant, belowElement];
 }
 

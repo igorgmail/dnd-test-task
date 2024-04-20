@@ -1,17 +1,13 @@
-import globalData from './global.js';
+import globalData from './globalData.js';
 import dragMoveHandler from './move.js';
-import {
-  firstNumberChange,
-  secondNumberChange,
-  detectedEmptyUl,
-} from './util.js';
+import { detectedEmptyUl } from './util.js';
+import { firstNumberChange, secondNumberChange } from './orderCalculate.js';
 
 function dragEndHandler(e) {
   e.preventDefault();
 
   globalData.moveStart = false; // Перемещение законченно
 
-  console.log('TARGET STOP');
   insertDraggableElement();
 
   // Удаляем пустой блок
@@ -20,13 +16,16 @@ function dragEndHandler(e) {
   firstNumberChange();
   secondNumberChange();
   detectedEmptyUl();
+
   Object.assign(globalData.draggableElement.style, {
     position: 'inherit',
     zIndex: 'auto',
     transform: 'none',
     transition: 'transform 0.5s ease',
   });
+
   globalData.draggableElement.classList.remove('block__item-draggable');
+
   // Очищаем данные
   globalData.draggableElement = null;
   globalData.currentDropElement = null;
@@ -39,11 +38,10 @@ function dragEndHandler(e) {
   globalData.currentDropParent = null;
 
   document.removeEventListener('mousemove', dragMoveHandler);
-  // document.removeEventListener('mouseup', mouseDownHandler);
   document.removeEventListener('mouseup', dragEndHandler);
 }
 
-// Вставляем блок в dropzone выбранную
+// Вставляем блок в выбранную dropzone
 function insertDraggableElement() {
   const targetDataValue = globalData.currentDropElement?.dataset.emptyPos;
 
@@ -54,8 +52,8 @@ function insertDraggableElement() {
 
   if (targetDataValue === 'left') {
     const newElement = globalData.draggableElement;
-    const parent = globalData.currentDropElement.closest('.block__empty');
     // получаем родителя
+    const parent = globalData.currentDropElement.closest('.block__empty');
     parent.after(newElement);
   }
 
@@ -84,11 +82,12 @@ function insertDraggableElement() {
     if (nextSiblingName === 'li') {
       const newUlEl = createNewUlElement(draggableElement);
       initiatorElement.insertAdjacentElement('afterend', newUlEl);
-      // nextSibling.firstChild.beforebegin(newUlEl);
       return;
     }
   }
 }
+
+// при перемещении элемента на уровень глубже оборачиваем его в ul
 function createNewUlElement(currentElement) {
   const newUl = document.createElement('ul');
   newUl.appendChild(currentElement);

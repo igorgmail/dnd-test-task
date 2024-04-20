@@ -44,7 +44,10 @@ gap: 1rem;
 }
 
 .block__item{
-  cursor: move;
+  cursor: grab;
+}
+.block__item-main{
+  cursor:no-drop
 }
 
 .block__item__part:first-child{
@@ -78,6 +81,7 @@ background-color: #4E4D4D;
   width: 100%;
   display: flex;
   justify-content: center;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 .button {
@@ -96,4 +100,8 @@ background-color: #4E4D4D;
   background: #C84904;
   text-decoration: none;
   cursor: pointer;
+}
+.info__block{
+font-size: 1.5rem;
+font-weight: 400;
 }
